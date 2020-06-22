@@ -15,6 +15,29 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.4.0'
+
+}
+
+task runWithJavaExec(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class with JavaExecTask"
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'RunnerKt'
+}
+
+jar {
+    archiveName("SophosMessage.jar")
+    // Needed because to run jar file as java -jar, manifest is needed and that's how we build it
+    manifest {
+        attributes(
+                'Main-Class': 'RunnerKt'
+        )
+    }
+    // To make a fat-jar i.e include all dependencies in the jar file, so that it can run independently
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 compileKotlin {
